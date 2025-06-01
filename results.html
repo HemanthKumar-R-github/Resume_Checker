@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-blue-600 py-4 px-6">
+                <h1 class="text-2xl font-bold text-white">Resume Analysis Results</h1>
+                <p class="text-blue-100">Your resume compatibility score and summary</p>
+            </div>
+            
+            <div class="p-6">
+                <div id="loading" class="text-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p class="mt-4 text-gray-600">Loading results...</p>
+                </div>
+                
+                <div id="results" class="hidden space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h2 class="text-lg font-semibold text-blue-800 mb-2">Compatibility Score</h2>
+                        <div class="flex items-center">
+                            <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                                <span id="score" class="text-3xl font-bold text-blue-600">0</span>
+                                <span class="text-blue-600">/100</span>
+                            </div>
+                            <div>
+                                <p id="scoreFeedback" class="text-gray-700"></p>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                                    <div id="scoreBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">Resume Summary</h2>
+                        <div id="resumeSummary" class="prose max-w-none text-gray-700"></div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">Strengths</h2>
+                        <div id="strengths" class="prose max-w-none text-gray-700"></div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">Areas for Improvement</h2>
+                        <div id="improvements" class="prose max-w-none text-gray-700"></div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">Tailoring Suggestions</h2>
+                        <div id="suggestions" class="prose max-w-none text-gray-700"></div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Analyze Another Resume
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultData = sessionStorage.getItem('analysisResult');
+            
+            if (resultData) {
+                const result = JSON.parse(resultData);
+                displayResults(result);
+            } else {
+                // No result data found, redirect back to the form
+                window.location.href = '/';
+            }
+        });
+        
+        function displayResults(result) {
+            // Hide loading, show results
+            document.getElementById('loading').classList.add('hidden');
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('hidden');
+            
+            // Populate the results
+            document.getElementById('score').textContent = result.score;
+            document.getElementById('scoreBar').style.width = `${result.score}%`;
+            
+            // Set feedback based on score
+            const feedback = document.getElementById('scoreFeedback');
+            if (result.score >= 80) {
+                feedback.textContent = 'Excellent match! Your resume strongly aligns with the job requirements.';
+                feedback.className = 'text-green-600';
+            } else if (result.score >= 60) {
+                feedback.textContent = 'Good match. Your resume has strong points but could use some improvements.';
+                feedback.className = 'text-blue-600';
+            } else if (result.score >= 40) {
+                feedback.textContent = 'Moderate match. Consider tailoring your resume more to the job description.';
+                feedback.className = 'text-yellow-600';
+            } else {
+                feedback.textContent = 'Weak match. Significant improvements needed to better align with the job requirements.';
+                feedback.className = 'text-red-600';
+            }
+            
+            // Populate the text sections
+            document.getElementById('resumeSummary').innerHTML = result.summary;
+            document.getElementById('strengths').innerHTML = result.strengths;
+            document.getElementById('improvements').innerHTML = result.improvements;
+            document.getElementById('suggestions').innerHTML = result.suggestions;
+        }
+    </script>
+</body>
+</html>
